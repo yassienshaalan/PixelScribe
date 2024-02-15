@@ -4,6 +4,7 @@ from PIL import Image, ImageTk
 import tkinter as tk
 import logging
 from textualizer import ContentDescriber
+import time 
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -45,14 +46,20 @@ class VideoHandler:
 
     def stop_video(self) -> None:
         """Stop the video capture and close the Tkinter window."""
-        self.shutdown_flag.set()
-        while self.content_describer.active_tasks > 0:
-            print("Waiting for content description to complete...")
+        print("Initiating shutdown...")
+        self.shutdown_flag.set()  # Signal all threads to shutdown
+
+        # Wait for content description tasks to complete
+        while self.content_describer is not None and self.content_describer.active_tasks > 0:
+            print("Waiting for content description tasks to complete...")
             time.sleep(1)  # Wait a bit before checking again
 
-            if self.cap.isOpened():
-                self.cap.release()
-            self.root.destroy()
+        # Close video capture
+        if self.cap.isOpened():
+            self.cap.release()
+        
+        # Destroy the Tkinter window
+        self.root.destroy()
 
     def get_current_frame(self) -> cv2.Mat | None:
         """Return the current frame captured by the webcam."""
