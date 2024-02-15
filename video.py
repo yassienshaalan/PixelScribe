@@ -17,6 +17,7 @@ class VideoHandler:
         self.photo: ImageTk.PhotoImage | None = None  # Placeholder for the current photo image
         self.current_frame: cv2.Mat | None = None  # Placeholder for the current frame
         self.content_describer = None  # Reference to ContentDescriber
+        self.shutdown_flag = threading.Event()  # Shutdown flag
 
     def video_stream(self) -> None:
         """Continuously capture frames from the webcam and display them on the Tkinter canvas."""
@@ -44,13 +45,14 @@ class VideoHandler:
 
     def stop_video(self) -> None:
         """Stop the video capture and close the Tkinter window."""
+        self.shutdown_flag.set()
         while self.content_describer.active_tasks > 0:
             print("Waiting for content description to complete...")
             time.sleep(1)  # Wait a bit before checking again
 
-        if self.cap.isOpened():
-            self.cap.release()
-        self.root.destroy()
+            if self.cap.isOpened():
+                self.cap.release()
+            self.root.destroy()
 
     def get_current_frame(self) -> cv2.Mat | None:
         """Return the current frame captured by the webcam."""

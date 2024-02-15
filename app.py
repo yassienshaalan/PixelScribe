@@ -6,7 +6,7 @@ from textualizer import ContentDescriber
 def setup_main_window() -> tk.Tk:
     """Initializes and returns the main Tkinter window."""
     root = tk.Tk()
-    root.title("Webcam Stream")
+    root.title("Webcam Streaming")
     return root
 
 def setup_user_input(root: tk.Tk) -> tk.Entry:
